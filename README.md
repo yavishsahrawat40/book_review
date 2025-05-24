@@ -59,9 +59,8 @@ A full-stack application designed for users to browse books, read and write revi
 
 ## Project Structure
 
-The project is organized into two main directories:
+The project is organized in main directories with all the frontend and a backend folder with all the backend files.
 
-* `frontend/`: Contains the React application.
 * `backend/`: Contains the Node.js, Express, and MongoDB application.
 
 ## Prerequisites
@@ -77,9 +76,9 @@ Before you begin, ensure you have the following installed:
 1.  **Clone the repository (if applicable):**
     ```bash
     git clone <repository-url>
-    cd book-review-platform
+    cd book_review
     ```
-    If you don't have a repository, ensure you have the `book-review-platform` directory with `frontend` and `backend` subdirectories.
+    If you don't have a repository, ensure you have the `book_review-` directory with frontend files and `backend` subdirectory.
 
 ### Backend Setup
 
@@ -92,7 +91,7 @@ Before you begin, ensure you have the following installed:
     Create a file named `.env` in the `backend/` directory and add the following environment variables. **Remember to replace placeholder values with your actual credentials and secrets.**
     ```ini
     PORT=5001
-    MONGO_URI=mongodb://localhost:27017/book_review_platform_dev # Replace with your MongoDB connection string
+    MONGO_URI=mongodb://localhost:27017/book_review # Replace with your MongoDB connection string
     JWT_SECRET=YOUR_VERY_STRONG_AND_LONG_JWT_SECRET_KEY_HERE # Replace with a strong secret
     CORS_ORIGIN=http://localhost:5173 # Or your frontend's actual development port
     # NODE_ENV=development (optional)
@@ -108,11 +107,7 @@ Before you begin, ensure you have the following installed:
 
 ### Frontend Setup
 
-1.  **Navigate to the frontend directory** (from the project root):
-    ```bash
-    cd ../frontend
-    # or from backend directory: cd ../frontend
-    ```
+1.  **Navigate to the main directory** (from the project root):
 
 2.  **Create a `.env` file (optional but recommended):**
     Create a file named `.env` in the `frontend/` directory. This is used by Create React App (or similar setups like Vite) to define environment variables for the frontend.
@@ -135,11 +130,11 @@ You need to run both the backend and frontend servers simultaneously in separate
 
 1.  **Navigate to the backend directory:**
     ```bash
-    cd path/to/book-review-platform/backend
+    cd path/to/book_review/backend
     ```
 2.  **Start the backend development server:**
     ```bash
-    npm run dev
+    nodemon index.js
     ```
     The backend server should start (typically on `http://localhost:5001` as per your `.env` file). You'll see log messages indicating the server is running and MongoDB is connected.
 
@@ -147,14 +142,9 @@ You need to run both the backend and frontend servers simultaneously in separate
 
 1.  **Navigate to the frontend directory:**
     ```bash
-    cd path/to/book-review-platform/frontend
+    cd path/to/book_review
     ```
 2.  **Start the frontend development server:**
-    If you are using a Create React App like setup:
-    ```bash
-    npm start
-    ```
-    If you are using Vite or a similar setup that uses `dev` script:
     ```bash
     npm run dev
     ```
