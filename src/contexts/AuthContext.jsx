@@ -1,70 +1,97 @@
-import React, { createContext, useState, useContext, useMemo } from 'react';
+import React, { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
+import apiClient from '../services/apiClient';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null); // Example: { id: '1', name: 'John Doe', email: 'john@example.com' }
-  const [loading, setLoading] = useState(false); // For async operations like login/logout
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
 
-  // Mock login function
+  const fetchUserProfile = useCallback(async () => {
+    const token = localStorage.getItem('authToken');
+    if (token && !currentUser) {
+      setLoading(true);
+      try {
+        const response = await apiClient.get('/users/profile');
+        setCurrentUser(response.data.user);
+      } catch (error) {
+        console.error("Failed to fetch user profile with token:", error.response ? error.response.data : error.message);
+        localStorage.removeItem('authToken');
+        setCurrentUser(null);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
+    setInitialLoadDone(true);
+  }, [currentUser]);
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, [fetchUserProfile]);
+
   const login = async (email, password) => {
     setLoading(true);
-    console.log("Attempting login with:", email); // Keep console.log for debugging
-    return new Promise(resolve => {
-      setTimeout(() => {
-        if (email === "user@example.com" && password === "password") {
-          const user = { id: '1', name: 'Test User', email: 'user@example.com', isAdmin: false };
-          setCurrentUser(user);
-          setLoading(false);
-          resolve({ success: true, user });
-        } else if (email === "admin@example.com" && password === "password") {
-          const user = { id: '2', name: 'Admin User', email: 'admin@example.com', isAdmin: true };
-          setCurrentUser(user);
-          setLoading(false);
-          resolve({ success: true, user });
-        }
-        else {
-          setLoading(false);
-          resolve({ success: false, message: "Invalid credentials" });
-        }
-      }, 1000);
-    });
+    try {
+      const response = await apiClient.post('/auth/login', { email, password });
+      if (response.data && response.data.token) {
+        localStorage.setItem('authToken', response.data.token);
+        setCurrentUser(response.data.user);
+        setLoading(false);
+        return { success: true, user: response.data.user };
+      } else {
+        setLoading(false);
+        return { success: false, message: response.data.message || "Login failed: No token received." };
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Login API error:", error.response ? error.response.data : error.message);
+      return { success: false, message: error.response?.data?.message || "Login failed. Please try again." };
+    }
   };
 
-  // Mock logout function
-  const logout = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setCurrentUser(null);
-      setLoading(false);
-    }, 500);
-  };
-  
-  // Mock signup function
   const signup = async (username, email, password) => {
     setLoading(true);
-    console.log("Attempting signup for:", username, email);
-    return new Promise(resolve => {
-        setTimeout(() => {
-            // Simulate checking if email exists - for now, always succeed
-            const newUser = { id: Date.now().toString(), name: username, email, isAdmin: false };
-            // In a real app, you might want to log in the user immediately after signup
-            // setCurrentUser(newUser); 
-            setLoading(false);
-            resolve({ success: true, user: newUser });
-        }, 1000);
-    });
+    try {
+      const response = await apiClient.post('/auth/signup', { username, email, password });
+      setLoading(false);
+      if (response.status === 201 && response.data) {
+        return { success: true, user: response.data.user, message: response.data.message };
+      } else {
+        return { success: false, message: response.data.message || "Signup failed." };
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Signup API error:", error.response ? error.response.data : error.message);
+      return { success: false, message: error.response?.data?.message || "Signup failed. Please try again." };
+    }
   };
 
+  const logout = useCallback(() => {
+    setLoading(true);
+    localStorage.removeItem('authToken');
+    setCurrentUser(null);
+    setLoading(false);
+    console.log("User logged out.");
+  }, []);
+  
+  const updateUserContext = useCallback((updatedUserData) => {
+    setCurrentUser(prevUser => ({ ...prevUser, ...updatedUserData }));
+  }, []);
 
   const value = useMemo(() => ({
     currentUser,
     loading,
+    initialLoadDone,
     login,
-    logout,
     signup,
+    logout,
     isAuthenticated: !!currentUser,
-  }), [currentUser, loading]);
+    fetchUserProfile,
+    updateUserContext
+  }), [currentUser, loading, initialLoadDone, logout, fetchUserProfile, updateUserContext]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

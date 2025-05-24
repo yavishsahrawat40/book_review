@@ -1,14 +1,10 @@
-// backend/src/config/loadEnv.js
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// For ES modules, __dirname is not available directly.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Construct the path to .env in the backend root directory
-// This assumes loadEnv.js is in backend/src/config/
 const envPath = path.resolve(__dirname, "..", "..", ".env");
 
 console.log(

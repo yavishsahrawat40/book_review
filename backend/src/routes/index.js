@@ -1,9 +1,8 @@
-    // backend/src/routes/index.js
     import express from 'express';
     import authRoutes from './authRoutes.js';
-    import userRoutes from './userRoutes.js'; // <-- Import userRoutes
-    // import bookRoutes from './bookRoutes.js';
-    // import reviewRoutes from './reviewRoutes.js';
+    import userRoutes from './userRoutes.js'; 
+    import bookRoutes from './bookRoutes.js';
+    import reviewRoutes from './reviewRoutes.js';
 
     const router = express.Router();
 
@@ -16,9 +15,9 @@
     });
 
     router.use('/auth', authRoutes);
-    router.use('/users', userRoutes); // <-- Mount userRoutes at /api/users
-    // router.use('/books', bookRoutes);
-    // router.use('/reviews', reviewRoutes);
+    router.use('/users', userRoutes);
+    router.use('/books', bookRoutes);
+    router.use('/reviews', reviewRoutes);
 
     router.get('/ping', (req, res) => {
       res.status(200).json({

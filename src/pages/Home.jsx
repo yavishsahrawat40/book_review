@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, MessageSquare, User, Search, Wind, Zap } from 'lucide-react'; // Added more icons
+import { BookOpen, MessageSquare, User, Search, Wind, Zap } from 'lucide-react';
 
 import { useBooks } from '../hooks/useBooks';
-import BookCard from '../components/book/BookCard'; // Assuming BookCard is well-styled
+import BookCard from '../components/book/BookCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 
@@ -18,18 +18,13 @@ const HomePage = () => {
       .slice(0, 4);
   }, [books]);
 
-  if (loading && !books?.length) return <LoadingSpinner />; // Show full page spinner only if no books yet
+  if (loading && !books?.length) return <LoadingSpinner />;
   if (error && !books?.length) return <ErrorMessage message={error} />;
 
   return (
     <div className="bg-gradient-to-b from-indigo-50 via-slate-50 to-white min-h-screen">
-      {/* Hero Section */}
       <header className="relative text-center py-16 md:py-24 px-4 overflow-hidden">
-        {/* Subtle background elements (optional) */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          {/* You could add SVG patterns or abstract shapes here */}
-        </div>
-        
+        <div className="absolute inset-0 opacity-10 pointer-events-none"></div>
         <div className="relative z-10 container mx-auto">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-indigo-700 mb-6 tracking-tight">
             Find Your Next Chapter
@@ -48,8 +43,6 @@ const HomePage = () => {
 
       <div className="container mx-auto px-4 py-8 sm:py-12">
         {error && <div className="mb-8"><ErrorMessage message={error} /></div>}
-        
-        {/* Featured Books Section */}
         <section className="my-12 md:my-16">
           <div className="text-center mb-10 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 tracking-tight">
@@ -70,8 +63,6 @@ const HomePage = () => {
             !loading && <p className="text-center text-slate-500 text-lg py-8">No featured books to display at the moment. Please check back soon!</p>
           )}
         </section>
-
-        {/* Why Join Us? Section - Enhanced */}
         <section className="my-16 md:my-24 bg-white py-12 sm:py-16 rounded-xl shadow-2xl overflow-hidden">
           <div className="text-center mb-10 md:mb-16 px-6">
             <h2 className="text-3xl md:text-4xl font-bold text-indigo-700 tracking-tight">
@@ -99,8 +90,6 @@ const HomePage = () => {
             />
           </div>
         </section>
-
-        {/* Call to Action Section (Optional) */}
         <section className="my-16 md:my-24 text-center py-12 px-4 bg-indigo-600 rounded-xl shadow-xl">
           <h2 className="text-3xl font-bold text-white mb-4">Ready to Dive In?</h2>
           <p className="text-indigo-100 text-lg mb-8 max-w-xl mx-auto">
@@ -126,7 +115,6 @@ const HomePage = () => {
   );
 };
 
-// A new sub-component for the "Why Join Us" section items for better structure
 const FeatureCard = ({ icon, title, description }) => (
   <div className="bg-slate-50 p-6 rounded-xl shadow-lg hover:shadow-indigo-100 transition-shadow duration-300 flex flex-col items-center text-center">
     <div className="p-4 bg-white rounded-full shadow-md mb-5 inline-block">

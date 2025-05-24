@@ -1,46 +1,40 @@
-// backend/src/routes/userRoutes.js
-import express from "express";
-import { protect, admin } from "../middlewares/authMiddleware.js"; // Import the middleware
+import express from 'express';
+import {
+  getUserProfile,
+  updateUserProfile,
+  getUserById,
+  getUsers,
+  deleteUser,
+  updateUserByAdmin,
+} from '../controllers/userController.js';
+import { protect, admin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// @desc    Get current user's profile (example protected route)
-// @route   GET /api/users/profile
-// @access  Private (requires login)
+router.get('/profile', protect, getUserProfile);
+router.put('/profile', protect, updateUserProfile);
+
+router.get('/:id', getUserById);
+
 router.get(
-  "/profile",
-  protect, // Apply the 'protect' middleware here
-  (req, res) => {
-    // If protect middleware passes, req.user will be available
-    if (req.user) {
-      res.json({
-        message: "Successfully accessed protected profile route!",
-        user: req.user,
-      });
-    } else {
-      // This case should ideally be handled by the protect middleware itself
-      res
-        .status(401)
-        .json({
-          message: "Not authorized, user data not found after protection.",
-        });
-    }
-  }
+  '/',
+  protect,
+  admin,
+  getUsers
 );
 
-// @desc    Example admin-only route
-// @route   GET /api/users/admin-dashboard
-// @access  Private/Admin
-router.get(
-  "/admin-dashboard",
-  protect, // First, ensure user is logged in
-  admin, // Then, ensure user is an admin
-  (req, res) => {
-    res.json({
-      message: "Welcome to the Admin Dashboard!",
-      adminUser: req.user,
-    });
-  }
+router.delete(
+  '/:id',
+  protect,
+  admin,
+  deleteUser
+);
+
+router.put(
+  '/:id',
+  protect,
+  admin,
+  updateUserByAdmin
 );
 
 export default router;

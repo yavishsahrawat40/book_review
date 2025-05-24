@@ -14,7 +14,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/'); // Redirect if already logged in
+      navigate('/'); 
     }
   }, [isAuthenticated, navigate]);
 
@@ -28,7 +28,7 @@ const LoginPage = () => {
       const response = await login(email, password);
       if (response.success) {
         addNotification(`Welcome back, ${response.user.name}!`, 'success');
-        navigate('/'); // Redirect to home or dashboard after successful login
+        navigate('/'); 
       } else {
         addNotification(response.message || 'Login failed. Please check your credentials.', 'error');
       }

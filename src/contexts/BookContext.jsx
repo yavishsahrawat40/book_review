@@ -1,13 +1,5 @@
-import React, { createContext, useState, useEffect, useMemo } from 'react';
-
-// Mock Data - In a real app, this would come from the backend API
-const MOCK_BOOKS_DATA = [
-  { id: '1', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', genre: 'Classic', coverImage: 'https://placehold.co/300x450/A5B4FC/312E81?text=The+Great+Gatsby', avgRating: 4.5, description: 'A story of wealth, love, and the American Dream.' },
-  { id: '2', title: 'To Kill a Mockingbird', author: 'Harper Lee', genre: 'Fiction', coverImage: 'https://placehold.co/300x450/FCA5A5/7F1D1D?text=To+Kill+a+Mockingbird', avgRating: 4.2, description: 'A profound look at justice and prejudice in the American South.' },
-  { id: '3', title: '1984', author: 'George Orwell', genre: 'Dystopian', coverImage: 'https://placehold.co/300x450/9CA3AF/1F2937?text=1984', avgRating: 4.8, description: 'A chilling vision of a totalitarian future.' },
-  { id: '4', title: 'Pride and Prejudice', author: 'Jane Austen', genre: 'Romance', coverImage: 'https://placehold.co/300x450/FDBA74/7C2D12?text=Pride+and+Prejudice', avgRating: 4.6, description: 'A witty and romantic novel of manners.' },
-  { id: '5', title: 'The Hobbit', author: 'J.R.R. Tolkien', genre: 'Fantasy', coverImage: 'https://placehold.co/300x450/86EFAC/14532D?text=The+Hobbit', avgRating: 4.7, description: 'An epic adventure in Middle-earth.' },
-];
+import React, { createContext, useState, useEffect, useMemo, useCallback } from 'react';
+import apiClient from '../services/apiClient';
 
 export const BookContext = createContext();
 
@@ -15,36 +7,78 @@ export const BookProvider = ({ children }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalBooks, setTotalBooks] = useState(0);
 
-  useEffect(() => {
-    // Simulate API call
+  const fetchBooks = useCallback(async (currentPage = 1, searchTerm = '', genreFilter = '', sortBy = 'createdAt_desc') => {
     setLoading(true);
-    setTimeout(() => {
-      try {
-        setBooks(MOCK_BOOKS_DATA);
-        setError(null);
-      } catch (err) {
-        setError("Failed to fetch books.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }, 1000); // Simulate 1 second delay
+    setError(null);
+    try {
+      const params = {
+        page: currentPage,
+        pageSize: 8,
+        search: searchTerm || undefined,
+        genre: genreFilter && genreFilter !== 'All Genres' ? genreFilter : undefined,
+      };
+
+      Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
+
+      const response = await apiClient.get('/books', { params });
+
+      setBooks(response.data.books || []);
+      setPage(response.data.page || 1);
+      setTotalPages(response.data.pages || 1);
+      setTotalBooks(response.data.totalBooks || 0);
+    } catch (err) {
+      console.error("Failed to fetch books:", err.response ? err.response.data : err.message);
+      setError(err.response?.data?.message || "Failed to load books.");
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const getBookById = (id) => {
-    return books.find(book => book.id === id);
-  };
+  useEffect(() => {
+    fetchBooks(1);
+  }, [fetchBooks]);
 
-  // In a real app, you'd have functions here to interact with a backend API
-  // e.g., fetchBooks, addBook, addReview, etc.
+  const getBookById = useCallback(async (bookId) => {
+    setLoading(true);
+    try {
+      const response = await apiClient.get(`/books/${bookId}`);
+      setLoading(false);
+      return response.data.book;
+    } catch (err) {
+      setLoading(false);
+      console.error(`Failed to fetch book ${bookId}:`, err);
+      setError(err.response?.data?.message || `Failed to load book ${bookId}.`);
+      return null;
+    }
+  }, []);
+
+  const addBook = async (bookData) => {
+    try {
+      const response = await apiClient.post('/books', bookData);
+      fetchBooks(page);
+      return { success: true, book: response.data.book };
+    } catch (error) {
+      console.error("Failed to add book:", error.response ? error.response.data : error.message);
+      return { success: false, message: error.response?.data?.message || "Failed to add book." };
+    }
+  };
 
   const value = useMemo(() => ({
     books,
     loading,
     error,
+    page,
+    totalPages,
+    totalBooks,
+    fetchBooks,
     getBookById,
-  }), [books, loading, error]);
+    addBook,
+  }), [books, loading, error, page, totalPages, totalBooks, fetchBooks, getBookById]);
 
   return (
     <BookContext.Provider value={value}>

@@ -18,7 +18,7 @@ const SignUpPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/'); // Redirect if already logged in
+      navigate('/');
     }
   }, [isAuthenticated, navigate]);
 
@@ -32,7 +32,6 @@ const SignUpPage = () => {
       addNotification("Passwords do not match.", "error");
       return;
     }
-    // Basic password strength check (example)
     if (password.length < 6) {
       addNotification("Password must be at least 6 characters long.", "error");
       return;
@@ -42,7 +41,7 @@ const SignUpPage = () => {
       const response = await signup(username, email, password);
       if (response.success) {
         addNotification(`Account created for ${response.user.name}! Please log in.`, 'success');
-        navigate('/login'); // Redirect to login page after successful signup
+        navigate('/login'); 
       } else {
         addNotification(response.message || 'Sign up failed. Please try again.', 'error');
       }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { Home, BookCopy, LogIn, UserPlus, UserCircle, LogOut, Menu, X } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext'; // Adjust path as needed
+import { useAuth } from '../../contexts/AuthContext';
 
 const Navbar = () => {
   const { isAuthenticated, currentUser, logout } = useAuth();
@@ -38,7 +38,7 @@ const Navbar = () => {
         key={link.text}
         to={link.to}
         className={({ isActive }) => `${classNames} ${isActive ? activeClassName : inactiveClassName}`}
-        onClick={() => isMobile && setMobileMenuOpen(false)} // Close mobile menu on click
+        onClick={() => isMobile && setMobileMenuOpen(false)} 
       >
         {link.icon}{link.text}
       </NavLink>
@@ -56,7 +56,7 @@ const Navbar = () => {
           </div>
           <div className="hidden md:flex items-center space-x-2">
             {navLinks.map(link => renderNavLink(link))}
-            <div className="w-px h-6 bg-indigo-400 mx-2"></div> {/* Separator */}
+            <div className="w-px h-6 bg-indigo-400 mx-2"></div> 
             {authLinks.map(link => renderNavLink(link))}
           </div>
           <div className="md:hidden flex items-center">
@@ -72,7 +72,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-16 inset-x-0 bg-indigo-600 p-2 space-y-1 sm:px-3 z-40 shadow-lg">
           {navLinks.map(link => renderNavLink(link, true))}

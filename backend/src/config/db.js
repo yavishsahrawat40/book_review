@@ -1,7 +1,4 @@
 import mongoose from 'mongoose';
-
-// The MONGO_URI is loaded into process.env by dotenv.config() in backend/index.js
-
 const connectDB = async () => {
   try {
     const mongoURI = process.env.MONGO_URI;
@@ -14,8 +11,6 @@ const connectDB = async () => {
       process.exit(1); // Exit process with failure code
     }
 
-    // Mongoose connection options (Mongoose 6+ has simplified defaults)
-    // useNewUrlParser, useUnifiedTopology, useCreateIndex, useFindAndModify are no longer needed.
     const conn = await mongoose.connect(mongoURI);
 
     console.log(`--------------------------------------------------------------------`);

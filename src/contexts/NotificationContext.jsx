@@ -3,13 +3,13 @@ import React, { createContext, useState, useContext, useCallback, useMemo } from
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
-  const [notification, setNotification] = useState(null); // { message: string, type: 'success' | 'error' | 'info' }
+  const [notification, setNotification] = useState(null); 
 
   const addNotification = useCallback((message, type = 'info') => {
     setNotification({ message, type });
     setTimeout(() => {
       setNotification(null);
-    }, 3000); // Notification disappears after 3 seconds
+    }, 3000); 
   }, []);
 
   const value = useMemo(() => ({ addNotification }), [addNotification]);
